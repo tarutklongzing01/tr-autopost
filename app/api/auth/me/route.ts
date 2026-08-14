@@ -1,0 +1,2 @@
+import {NextRequest,NextResponse} from 'next/server';import {adminAuth} from '@/lib/firebase/admin';
+export async function GET(req:NextRequest){const cookie=req.cookies.get('fbautopost_session')?.value;if(!cookie||!adminAuth)return NextResponse.json({authenticated:false},{status:401});try{const user=await adminAuth.verifySessionCookie(cookie,true);return NextResponse.json({authenticated:true,uid:user.uid,email:user.email||''})}catch{return NextResponse.json({authenticated:false},{status:401})}}

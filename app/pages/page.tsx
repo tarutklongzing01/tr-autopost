@@ -1,0 +1,1 @@
+import {Suspense} from 'react';import {Pages} from '@/components/pages/Pages';export default function Page(){return <Suspense fallback={<div className="card h-40 animate-pulse"/>}><Pages/></Suspense>}

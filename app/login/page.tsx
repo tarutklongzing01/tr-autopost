@@ -25,8 +25,9 @@ export default function Login() {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ idToken }),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
+    const contentType = response.headers.get('content-type') || '';
+    const data = contentType.includes('application/json') ? await response.json() : null;
+    if (!response.ok) throw new Error(data?.error || `เซิร์ฟเวอร์ล็อกอินขัดข้อง (${response.status})`);
     toast.success('เข้าสู่ระบบสำเร็จ');
     router.replace(params.get('next') || '/');
     router.refresh();

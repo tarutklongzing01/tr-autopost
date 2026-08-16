@@ -4,27 +4,27 @@ export const GRAPH_VERSION=process.env.META_GRAPH_API_VERSION||'v25.0';
 export const GRAPH_URL=`https://graph.facebook.com/${GRAPH_VERSION}`;
 export const FACEBOOK_SCOPES=['pages_show_list','pages_read_engagement','pages_manage_posts','business_management'];
 
-function required(name:'META_APP_ID'|'META_APP_SECRET'|'META_REDIRECT_URI'){
+function required(name:'META_APP_ID'|'META_APP_SECRET'){
   const value=process.env[name];
   if(!value)throw new Error(`${name} is not configured`);
   return value;
 }
 
-export function getFacebookAuthUrl(state:string){
+export function getFacebookAuthUrl(state:string,redirectUri:string){
   const url=new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);
   url.searchParams.set('client_id',required('META_APP_ID'));
-  url.searchParams.set('redirect_uri',required('META_REDIRECT_URI'));
+  url.searchParams.set('redirect_uri',redirectUri);
   url.searchParams.set('state',state);
   url.searchParams.set('scope',FACEBOOK_SCOPES.join(','));
   url.searchParams.set('response_type','code');
   return url.toString();
 }
 
-export async function exchangeCodeForLongLivedToken(code:string){
+export async function exchangeCodeForLongLivedToken(code:string,redirectUri:string){
   const shortUrl=new URL(`${GRAPH_URL}/oauth/access_token`);
   shortUrl.searchParams.set('client_id',required('META_APP_ID'));
   shortUrl.searchParams.set('client_secret',required('META_APP_SECRET'));
-  shortUrl.searchParams.set('redirect_uri',required('META_REDIRECT_URI'));
+  shortUrl.searchParams.set('redirect_uri',redirectUri);
   shortUrl.searchParams.set('code',code);
   const short=await graphFetch<{access_token:string}>(shortUrl);
   const longUrl=new URL(`${GRAPH_URL}/oauth/access_token`);
